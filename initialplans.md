@@ -1,13 +1,4 @@
 # Commands 
-```
-help = Shows all commands & their uses
-stats = See your statistics about your current subscribers
-export = Export a beautified csv list of current subscribers
-select = Select a random subscriber / gifter
-login = Log into your Twitch Account (opens Twitch OAuth page)
-logout = Log out of your Twitch account without closing the application
-exit = Exit the app (You will automatically be logged out)
-```
 
 # Stats
 Current total subscribers = a
