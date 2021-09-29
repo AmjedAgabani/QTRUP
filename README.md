@@ -1,1 +1,1 @@
-# qtrup
+# qt-rup
