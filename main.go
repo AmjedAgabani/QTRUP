@@ -1,7 +1,11 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
+	"io/ioutil"
+	"log"
+	"net/http"
 	"os"
 )
 
@@ -12,12 +16,11 @@ func main() {
 	switch command {
 	case "help":
 		help()
-	case "choose":
-		choose()
+	case "login":
+		logIn()
 	default:
 		fmt.Println("Something went wrong")
 	}
-
 }
 
 func help() {
@@ -38,6 +41,35 @@ The commands are:
     exit      exit the app (you will automatically be logged out)`)
 }
 
-func choose() {
-	fmt.Println("Choose function ran")
+type openid_configuration struct {
+	AuthorizationEndpoint string `json:"authorization_endpoint"`
+	TokenEndpoint         string `json:"token_endpoint"`
+	UserinfoEndpoint      string `json:"userinfo_endpoint"`
+}
+
+func logIn() {
+
+	url := "https://id.twitch.tv/oauth2/.well-known/openid-configuration"
+
+	resp, err := http.Get(url)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	if resp.Body != nil {
+		defer resp.Body.Close()
+	}
+
+	body, readErr := ioutil.ReadAll(resp.Body)
+	if readErr != nil {
+		log.Fatal(readErr)
+	}
+
+	openid_configuration := openid_configuration{}
+	jsonErr := json.Unmarshal(body, &openid_configuration)
+	if jsonErr != nil {
+		log.Fatal(jsonErr)
+	}
+
+	fmt.Println(openid_configuration)
 }
