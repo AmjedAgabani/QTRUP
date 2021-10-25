@@ -17,6 +17,7 @@ func main() {
 	case "login":
 		resp := oidc.GetOpenIDConfiguration()
 		fmt.Println(resp)
+		oidc.OpenBrowser(resp)
 	default:
 		fmt.Println("Something went wrong")
 	}
