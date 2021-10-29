@@ -14,7 +14,7 @@ func OpenBrowser(configuration OpenIDConfiguration) error {
 	}
 	q := u.Query()
 	q.Set("client_id", "gx35ttsecbzblr2ksi9a7l2beqsx8c")
-	q.Set("redirect_uri", "http://localhost")
+	q.Set("redirect_uri", "http://localhost:30423")
 	q.Set("response_type", "code")
 	q.Set("scope", "channel:read:subscriptions")
 	q.Set("claims", "preferred_username")
