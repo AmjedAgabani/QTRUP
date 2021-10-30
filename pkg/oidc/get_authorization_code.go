@@ -1,36 +1,44 @@
 package oidc
 
 import (
-	"fmt"
+	"context"
 	"log"
 	"net/http"
+	"time"
 )
-
-func handleCallback(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("You can now close this tab."))
-	code := r.URL.Query().Get("code")
-	fmt.Println(code)
-}
 
 func GetAuthorizationCode() string {
 	channel := make(chan string, 1)
 
-	// channel <- "SOMEHOW CODE GOES THROUGH HERE"
-
+	// configure server
 	mux := http.NewServeMux()
-	mux.HandleFunc("/", handleCallback)
+	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		// get code
+		w.Write([]byte("You can now close this tab."))
+		code := r.URL.Query().Get("code")
+		// send code to main thread
+		channel <- code
+	})
+	server := &http.Server{Addr: ":30423", Handler: mux}
 
+	// start server
 	go func() {
-		server := &http.Server{Addr: ":30423", Handler: mux}
 		err := server.ListenAndServe()
-		if err != nil {
+		if err != http.ErrServerClosed {
 			log.Fatal(err)
 		}
 	}()
 
+	// wait for authorization code
 	authorizationCode := <-channel
 
-	fmt.Println(authorizationCode)
+	// shutdown server
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
+	defer cancel()
+	err := server.Shutdown(ctx)
+	if err != nil {
+		log.Fatal(err)
+	}
 
-	return ""
+	return authorizationCode
 }
