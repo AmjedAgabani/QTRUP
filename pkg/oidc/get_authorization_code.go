@@ -11,15 +11,7 @@ func GetAuthorizationCode() string {
 	channel := make(chan string, 1)
 
 	// configure server
-	mux := http.NewServeMux()
-	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		// get code
-		w.Write([]byte("You can now close this tab."))
-		code := r.URL.Query().Get("code")
-		// send code to main thread
-		channel <- code
-	})
-	server := &http.Server{Addr: ":30423", Handler: mux}
+	server := configureServer(&channel)
 
 	// start server
 	go func() {
@@ -33,12 +25,30 @@ func GetAuthorizationCode() string {
 	authorizationCode := <-channel
 
 	// shutdown server
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
-	defer cancel()
-	err := server.Shutdown(ctx)
+	err := shutdownServer(&server)
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	return authorizationCode
+}
+
+func configureServer(channel *chan string) http.Server {
+	mux := http.NewServeMux()
+	mux.HandleFunc("/", handleCallbackFactory(channel))
+	return http.Server{Addr: ":30423", Handler: mux}
+}
+
+func handleCallbackFactory(channel *chan string) func(http.ResponseWriter, *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
+		w.Write([]byte("You can now close this tab."))
+		code := r.URL.Query().Get("code")
+		*channel <- code
+	}
+}
+
+func shutdownServer(server *http.Server) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	return server.Shutdown(ctx)
 }
