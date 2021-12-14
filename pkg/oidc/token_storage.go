@@ -2,8 +2,8 @@ package oidc
 
 import (
 	"encoding/json"
+	"io/ioutil"
 	"log"
-	"os"
 )
 
 func SaveToken(token Token) {
@@ -13,12 +13,24 @@ func SaveToken(token Token) {
 		log.Fatal(err)
 	}
 
-	f, err := os.Create("token.txt")
+	err = ioutil.WriteFile("token.txt", bytes, 0600)
 	if err != nil {
 		log.Fatal(err)
 	}
-	defer f.Close()
-	f.Write(bytes)
+}
+
+func LoadToken() Token {
+	bytes, err := ioutil.ReadFile("token.txt")
+	if err != nil {
+		log.Fatal(err)
+	}
+	token := Token{}
+	jsonErr := json.Unmarshal(bytes, &token)
+	if err != nil {
+		log.Fatal(jsonErr)
+	}
+
+	return token
 }
 
 // save token as txt file

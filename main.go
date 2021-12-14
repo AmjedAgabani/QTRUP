@@ -19,8 +19,11 @@ func main() {
 		oidc.OpenBrowser(openIdConfiguration)
 		authorizationCode := oidc.GetAuthorizationCode()
 		token := oidc.PostToken(openIdConfiguration, authorizationCode)
-		fmt.Println(string(token.AccessToken))
+		fmt.Println(token)
 		oidc.SaveToken(token)
+	case "stats":
+		token := oidc.LoadToken()
+		fmt.Println(token)
 	default:
 		fmt.Println("Something went wrong")
 	}
