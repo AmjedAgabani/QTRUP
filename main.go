@@ -20,6 +20,7 @@ func main() {
 		authorizationCode := oidc.GetAuthorizationCode()
 		token := oidc.PostToken(openIdConfiguration, authorizationCode)
 		fmt.Println(string(token.AccessToken))
+		oidc.SaveToken(token)
 	default:
 		fmt.Println("Something went wrong")
 	}
