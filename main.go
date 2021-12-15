@@ -48,6 +48,21 @@ func main() {
 			log.Fatal(err)
 		}
 		fmt.Println(token)
+
+	case "whoami":
+		token, err := oidc.LoadToken()
+		if err != nil {
+			log.Fatal(err)
+		}
+		openIdConfiguration, err := oidc.GetOpenIDConfiguration()
+		if err != nil {
+			log.Fatal(err)
+		}
+		err = oidc.GetUserInfo(openIdConfiguration, token)
+		if err != nil {
+			log.Fatal(err)
+		}
+		// read response and print the user information
 	default:
 		fmt.Println("Something went wrong")
 	}

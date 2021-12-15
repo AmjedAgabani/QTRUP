@@ -16,7 +16,7 @@ func OpenBrowser(configuration OpenIDConfiguration) error {
 	q.Set("redirect_uri", "http://localhost:30423")
 	q.Set("response_type", "code")
 	q.Set("scope", "channel:read:subscriptions")
-	q.Set("claims", "preferred_username")
+	q.Set("claims", "preferred_username picture")
 	u.RawQuery = q.Encode()
 	return browser.OpenURL(u.String())
 }
