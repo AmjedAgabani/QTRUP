@@ -32,12 +32,3 @@ func LoadToken() Token {
 
 	return token
 }
-
-// save token as txt file
-// convert token from struct to string
-// write string into txt file
-
-// load token
-// find existing txt file
-// copy the string inside
-// convert back to struct
