@@ -7,7 +7,7 @@ import (
 	"time"
 )
 
-func GetAuthorizationCode() string {
+func GetAuthorizationCode() (string, error) {
 	channel := make(chan string, 1)
 
 	// configure server
@@ -27,10 +27,10 @@ func GetAuthorizationCode() string {
 	// shutdown server
 	err := shutdownServer(&server)
 	if err != nil {
-		log.Fatal(err)
+		return "", err
 	}
 
-	return authorizationCode
+	return authorizationCode, nil
 }
 
 func configureServer(channel *chan string) http.Server {

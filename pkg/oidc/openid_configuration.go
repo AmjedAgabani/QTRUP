@@ -3,7 +3,6 @@ package oidc
 import (
 	"encoding/json"
 	"io/ioutil"
-	"log"
 	"net/http"
 )
 
@@ -13,13 +12,13 @@ type OpenIDConfiguration struct {
 	UserinfoEndpoint      string `json:"userinfo_endpoint"`
 }
 
-func GetOpenIDConfiguration() OpenIDConfiguration {
+func GetOpenIDConfiguration() (OpenIDConfiguration, error) {
 
 	url := "https://id.twitch.tv/oauth2/.well-known/openid-configuration"
 
 	resp, err := http.Get(url)
 	if err != nil {
-		log.Fatal(err)
+		return OpenIDConfiguration{}, err
 	}
 
 	if resp.Body != nil {
@@ -28,15 +27,14 @@ func GetOpenIDConfiguration() OpenIDConfiguration {
 
 	body, readErr := ioutil.ReadAll(resp.Body)
 	if readErr != nil {
-		log.Fatal(readErr)
+		return OpenIDConfiguration{}, readErr
 	}
 
 	openid_configuration := OpenIDConfiguration{}
 	jsonErr := json.Unmarshal(body, &openid_configuration)
 	if jsonErr != nil {
-		log.Fatal(jsonErr)
+		return OpenIDConfiguration{}, jsonErr
 	}
 
-
-	return openid_configuration
+	return openid_configuration, nil
 }

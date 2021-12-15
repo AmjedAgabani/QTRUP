@@ -1,7 +1,6 @@
 package oidc
 
 import (
-	"log"
 	"net/url"
 
 	"github.com/pkg/browser"
@@ -10,7 +9,7 @@ import (
 func OpenBrowser(configuration OpenIDConfiguration) error {
 	u, err := url.Parse(configuration.AuthorizationEndpoint)
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 	q := u.Query()
 	q.Set("client_id", "gx35ttsecbzblr2ksi9a7l2beqsx8c")

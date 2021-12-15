@@ -3,7 +3,6 @@ package oidc
 import (
 	"encoding/json"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"net/url"
 )
@@ -16,7 +15,9 @@ type Token struct {
 	TokenType    string   `json:"token_type"`
 }
 
-func PostToken(configuration OpenIDConfiguration, authorizationCode string) Token {
+func PostToken(configuration OpenIDConfiguration, authorizationCode string) (Token, error) {
+
+	token := Token{}
 
 	data := url.Values{
 		"client_id":     {"gx35ttsecbzblr2ksi9a7l2beqsx8c"},
@@ -28,20 +29,19 @@ func PostToken(configuration OpenIDConfiguration, authorizationCode string) Toke
 
 	resp, err := http.PostForm(configuration.TokenEndpoint, data)
 	if err != nil {
-		log.Fatal(err)
+		return token, err
 	}
 
 	body, readErr := ioutil.ReadAll(resp.Body)
 	if readErr != nil {
-		log.Fatal(readErr)
+		return token, readErr
 	}
 
-	token := Token{}
 	jsonErr := json.Unmarshal(body, &token)
 	if jsonErr != nil {
-		log.Fatal(jsonErr)
+		return token, jsonErr
 	}
 
-	return token
+	return token, nil
 
 }

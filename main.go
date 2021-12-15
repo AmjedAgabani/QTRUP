@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"os"
 
 	"github.com/AmjedAgabani/qt-rup/pkg/oidc"
@@ -15,14 +16,37 @@ func main() {
 	case "help":
 		help()
 	case "login":
-		openIdConfiguration := oidc.GetOpenIDConfiguration()
-		oidc.OpenBrowser(openIdConfiguration)
-		authorizationCode := oidc.GetAuthorizationCode()
-		token := oidc.PostToken(openIdConfiguration, authorizationCode)
+		openIdConfiguration, err := oidc.GetOpenIDConfiguration()
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		err = oidc.OpenBrowser(openIdConfiguration)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		authorizationCode, err := oidc.GetAuthorizationCode()
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		token, err := oidc.PostToken(openIdConfiguration, authorizationCode)
+		if err != nil {
+			log.Fatal(err)
+		}
 		fmt.Println(token)
-		oidc.SaveToken(token)
+
+		err = oidc.SaveToken(token)
+		if err != nil {
+			log.Fatal(err)
+		}
+
 	case "stats":
-		token := oidc.LoadToken()
+		token, err := oidc.LoadToken()
+		if err != nil {
+			log.Fatal(err)
+		}
 		fmt.Println(token)
 	default:
 		fmt.Println("Something went wrong")
